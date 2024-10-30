@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.nt.entity.User;
+import com.nt.entity.dto.AuthenticationDTO;
 import com.nt.entity.dto.UserResponseDTO;
 
 public interface IUserService {

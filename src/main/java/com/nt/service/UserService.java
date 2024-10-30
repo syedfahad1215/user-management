@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.nt.controller.AuthenticationController;
 import com.nt.entity.User;
+import com.nt.entity.dto.AuthenticationDTO;
 import com.nt.entity.dto.UserResponseDTO;
 import com.nt.exception.UserNotFoundException;
 import com.nt.repo.UserRepository;

@@ -1,5 +1,7 @@
 package com.nt.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -31,18 +33,22 @@ public class UserController {
 	
 	
 	@GetMapping("/showUser")
-	public String showUser(
-			Model model,
-			@RequestParam("id") Integer id
-	){
+	public String showUser( Model model,@RequestParam("id") Integer id)
+	{
 		
 		Optional<User> userById = userService.getUserById(id);
 		
 		User user = userById.orElseThrow(() -> new UserNotFoundException());
 		
-		model.addAttribute("user", user);
+		List<User> list = new ArrayList<>();
 		
-		return "show-user";
+		list.add(user);
+		
+		model.addAttribute("list", list);
+		
+		model.addAttribute("showPagination", false);
+		
+		return "all-users";
 	}
 	
 	
@@ -51,8 +57,10 @@ public class UserController {
             @PageableDefault(page = 0, size = 5) Pageable pageable,
             @RequestParam(value = "message", required = false) String message,
             @RequestParam(value = "username", required = false) String username
-    ) {
+    ){
 		Page<User> page = userService.getAllUsers(pageable);
+		
+		List<User> list = page.getContent();
 		
 		model.addAttribute("list", page.getContent());
 		model.addAttribute("page", page);
@@ -60,14 +68,14 @@ public class UserController {
 		
 		logger.info("From /allUser [api] - Navigating to all-user.html page");
 		
+		model.addAttribute("showPagination", list.size() > 1);
+		
 		return "all-users";
 	}
 	
 	@GetMapping("user/delete")
-	public String deleteUser(
-			@RequestParam Integer id,
-			Model model
-	){
+	public String deleteUser(@RequestParam Integer id,Model model)
+	{
 		String msg = null;
 		
 		try {
@@ -97,9 +105,8 @@ public class UserController {
 	}
 
 	@GetMapping("user/edit")
-	public String showEdit(
-			@RequestParam("id") Integer id,
-			Model model) {
+	public String showEdit(@RequestParam("id") Integer id, Model model) 
+	{
 		String page = null;
 		try {
 			Optional<User> dbUser = userService.getUserById(id);
@@ -108,7 +115,7 @@ public class UserController {
 			
 			model.addAttribute("userObj", user);
 			
-			page = "edit-user";
+			page = "Register";
 			
 		} catch (UserNotFoundException e) {
 			model.addAttribute("message", e.getMessage());
@@ -121,11 +128,9 @@ public class UserController {
 	}
 	
 	
-	@PostMapping("/update")
-	public String updateUser(
-					Model model,
-					@ModelAttribute User user
-	){
+	@PostMapping("/user/update")
+	public String updateUser(Model model, @ModelAttribute User user )
+	{
 		
 		UserResponseDTO saveUser = userService.saveUser(user);
 		

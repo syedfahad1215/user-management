@@ -2,9 +2,7 @@ package com.nt.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -14,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.nt.entity.User;
+import com.nt.entity.dto.AuthenticationDTO;
 import com.nt.entity.dto.UserResponseDTO;
 import com.nt.service.UserService;
 
@@ -36,7 +35,8 @@ public class AuthenticationController {
 	
 	
 	@GetMapping("/register")
-	public String showRegisterForm(Model model) {
+	public String showRegisterForm(Model model) 
+	{
         model.addAttribute("userObj", new User());
         //returning the register page
         return "Register";
@@ -45,13 +45,11 @@ public class AuthenticationController {
 
 	
 	 @PostMapping(value = "/register")
-	 public String registerNewUser(
-			 						Model model, 
-			 						@ModelAttribute("userObj") User user
-	 ){
+	 public String registerNewUser(	Model model, @ModelAttribute("userObj") User user)
+	 {
 		 logger.info("Registering new user where user object is"+user.toString());
 		 
-		  UserResponseDTO saveUser = authService.saveUser(user);
+		 authService.saveUser(user);
 		 
 		 return "/login";
 	 }
@@ -69,33 +67,50 @@ public class AuthenticationController {
 	 
 	 
 	 @PostMapping(value="/login", consumes= MediaType.APPLICATION_JSON_VALUE)
-	 public String authentication(
-			 			Model model, 
-			 			@ModelAttribute("userObj") User user
-	 ){
+	 public String authentication(Model model, @ModelAttribute("userObj") User user )
+	 {
+		 
 		 String authenticationResult = authService.authenticate(user);
 		 
 		 if(authenticationResult==null) {
 			 logger.error("Invalid Credentials failed to login");
 			 model.addAttribute("msg", "Invalid Credentials");
 			 		 
-			 
 			 return "login";
-
 		 }
 		 
-		 boolean isAdmin = authService.checkUserRole();
 		 
-		 if(isAdmin) {
-			 return "/admin-home";
-		 }
+		 
+		 logger.info("Log-in successfull The id= "+user.getId());
+		 
+//		 if(isAdmin) {
+//			 return "/admin-home";
+//		 }
 		 
 		 logger.info(authenticationResult+"!! now you are redirected to home page ");
-		 return "/user-home";
+		 return "/home";
 		 
 	 }
 	 
+	 @GetMapping("/home")
+	 public String showHome(Model model) {
+		 
+		 User user = authService.getCurrentUserDetails();
+		 
+		 model.addAttribute("id", user.getId());
+		 
+		 boolean isAdmin = (user.getRole().equals("ADMIN")) ? true : false;
+		 
+		 model.addAttribute("isAdmin", isAdmin);
+		 
+		 logger.info("Navigating to home page. The id= "+user.getId()+", isAdmin= "+isAdmin);
+		 
+		 return "home";
+	 }
 	 
+	 
+	 
+	/* 
 	 	@GetMapping("/home")
 	    public String showHome(Model model) {
 		 
@@ -120,6 +135,7 @@ public class AuthenticationController {
 	        return "admin-home";
 	  }
 	 
+*/
 		/*
 		 * @GetMapping("/user-home") public String showAdminHome(Model model) { int id =
 		 * authService.getUserId(); logger.info("Navigating user to user-home page");

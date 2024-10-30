@@ -1,10 +1,16 @@
 package com.nt.entity;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,9 +20,7 @@ import lombok.ToString;
 @Entity
 @Setter
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
+//@Table(name= "new_user")
 public class User {
 
 	@Id
@@ -34,5 +38,23 @@ public class User {
 
 	@Column(nullable = false)
 	private String role;
+	
+	
+	
+	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private List<Expenses> expenses;
+
+
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", username=" + username + ", email=" + email + ", password=" + password + ", role="
+				+ role + "]";
+	}
+
+
+
+	
+	
 
 }

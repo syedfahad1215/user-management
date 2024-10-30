@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Expense </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Expense Module</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link " aria-current="page" href="/home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/addExpense">New Expense</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="${isAdmin == true ? '/allusers/expense' : '/all/expense'}">Expense List</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+		<div class="table-container mt-5 navbar-dark bg-dark">
+			<h2 class="text-center">User</h2>
+
+
+
+			<!-- Display flash messages -->
+			<div th:if="${smsg}" class="alert alert-success text-center mt-3"
+				th:text="${smsg}"></div>
+			<div th:if="${errorMsg}" class="alert alert-danger text-center mt-3"
+				th:text="${errorMsg}"></div>
+
+			<!-- User Table -->
+			<div>
+				<table class="table table-hover table-striped mt-4 fs-5">
+					<tr>
+						<th>Id</th>
+						<th>Name</th>
+						<th>Amount</th>
+						<th>Location</th>
+						<th>expenseDate</th>
+						<th>Operations</th>
+					</tr>
+
+					<tr th:each="expense:${list}">
+						<td th:text="${expense.id}"></td>
+						<td th:text="${expense.expenseName}"></td>
+						<td th:text="${expense.amount}"></td>
+						<td th:text="${expense.location}"></td>
+						<td th:text="${expense.expenseDate}"></td>
+						<td><a th:href="@{/expense/delete(id=${user.id})}">
+								<button class="btn btn-danger ms-2">Delete</button>
+						</a> <a th:href="@{/expense/edit(id=${user.id})}">
+								<button class="btn btn-warning ms-2">Edit</button>
+						</a></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+
+	</div>
+	
+	<div>
+    		<ul class="pagination justify-content-center mt-4">
+            <li class="page-item">
+                <a class="page-link navbar-dark bg-dark text-white m-2"
+                   th:if="${page.hasPrevious()}"
+                   th:href="@{/all/expense(page=${page.getNumber()-1}, expenseName=${param.expenseName})}">
+                    Previous
+                </a>
+            </li>
+            <th:block th:each="i: ${#numbers.sequence(0,page.getTotalPages()-1)}">
+                <div th:switch="${i}">
+                    <div th:case="${page.getNumber()}">
+                        <li class="page-item active">
+                            <a class="page-link navbar-dark bg-dark text-white border border-black m-2"
+                               th:href="@{/all/expense(page=${i}, expenseName=${param.expenseName})}"
+                               th:text="${i+1}">
+                            </a>
+                        </li>
+                    </div>
+                    <div th:case="*">
+                        <li class="page-item">
+                            <a class="page-link border border-black text-black m-2"
+                               th:href="@{/all/expense(page=${i}, expenseName=${param.expenseName})}"
+                               th:text="${i+1}">
+                            </a>
+                        </li>
+                    </div>
+                </div>
+            </th:block>
+            <li class="page-item">
+                <a class="page-link navbar-dark bg-dark text-white m-2"
+                   th:if="${page.hasNext()}"
+                   th:href="@{/list(page=${page.getNumber()+1}, expenseName=${param.expenseName})}">
+                    Next
+                </a>
+            </li>
+        </ul>
+    	</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
