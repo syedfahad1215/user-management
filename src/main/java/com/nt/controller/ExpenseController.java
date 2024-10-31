@@ -83,7 +83,7 @@ public class ExpenseController {
             @RequestParam(value = "expenseName", required = false) String expenseName
 	){
 
-		logger.info("The request is /addExpense - [api] | Navigating to all-expenses.html ");
+		logger.info("The request is /all/expense - [api] | Navigating to all-expenses.html ");
 
 		Page<Expenses> list = expenseService.getAllExpense(pageable);
 		
@@ -93,7 +93,46 @@ public class ExpenseController {
 		return "all-expenses";
 	}
 
-	@GetMapping("expense/delete")
+	
+
+	@GetMapping("expense/edit")
+	public String showEdit(@RequestParam("id") Integer id, Model model) {
+		
+		try {
+			Expenses expense = expenseService.getExpenseById(id);
+			
+			logger.info("The expenses are "+expense.toString());	
+
+			model.addAttribute("expenseObj", expense);
+			
+			model.addAttribute("isEdit", true);
+			
+			logger.info("From user/edit?id=(\"+id+\") [api] - Navigating to edit-expense/ add-expense.html ");
+
+			return "add-expense";
+
+		} catch (UserNotFoundException e) {
+			model.addAttribute("message", e.getMessage());
+			
+			e.printStackTrace();
+		}
+
+		logger.info("From user/edit?id=(\"+id+\") [api] - Navigating to home.html ");
+		return "home";
+	}
+	
+	
+	@GetMapping("/search/expense")
+	public void showEdit(@RequestParam("name") String name, Model model) 
+	{
+		
+		logger.info("Search by expense name= "+name);
+	}
+		
+	
+	/*
+	 
+	 @GetMapping("expense/delete")
 	public String deleteUser(@RequestParam Integer id, Model model) {
 		String msg = null;
 
@@ -109,39 +148,15 @@ public class ExpenseController {
 
 		model.addAttribute("message", msg);
 
-		boolean isAdmin = expenseService.isAdmin();
+		
+		logger.info("From user/delete?id=("+id+") [api] - Navigating allExpenses - [api]");
 
-		if (isAdmin) {
-			logger.info("From user/delete?id=(" + id + ") [api] - Navigating to /allUsers - api");
-			return "redirect:/allUsers";
-		}
-
-		logger.info("From user/delete?id=(\"+id+\") [api] - Navigating to login as user record is deleted page");
-
-		return "login";
+		return "redirect:/all/expense";
 
 	}
-
-	@GetMapping("expense/edit")
-	public String showEdit(@RequestParam("id") Integer id, Model model) {
-		String page = null;
-		try {
-			User user = expenseService.getUserById(id);
-
-
-			model.addAttribute("userObj", user);
-
-			page = "edit-user";
-
-		} catch (UserNotFoundException e) {
-			model.addAttribute("message", e.getMessage());
-			page = "home";
-			e.printStackTrace();
-		}
-
-		logger.info("From user/edit?id=(\"+id+\") [api] - Navigating to " + page + ".html ");
-		return page;
-	}
+	 
+	 
+	 */
 
 /*
 	@PostMapping("expense/update")

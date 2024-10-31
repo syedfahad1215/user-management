@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Expense </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+    	
+    	#searchText{
+    		width: 400px;
+    	}
+    </style>
+    
 </head>
 <body>
 <!-- Navbar -->
@@ -22,10 +30,10 @@
                     <a class="nav-link " aria-current="page" href="/home">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/addExpense">New Expense</a>
+                    <a class="nav-link " aria-current="page" href="/addExpense">New Expense</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="${isAdmin == true ? '/allusers/expense' : '/all/expense'}">Expense List</a>
+                    <a class="nav-link active" th:href="${isAdmin == true ? '/allusers/expense' : '/all/expense'}">Expense List</a>
                 </li>
             </ul>
         </div>
@@ -33,11 +41,14 @@
 </nav>
 
 <div class="container">
-		<div class="table-container mt-5 navbar-dark bg-dark">
-			<h2 class="text-center">User</h2>
+
+	<div class="form-group search-container">
+		<input class="form-control input-lg mt-3" type="text" id="searchText" oninput="handleInput(event)" width="100px" placeholder="Search By Expense Name">
+	</div>
 
 
-
+		<div class="table-container mt-1 ">
+		
 			<!-- Display flash messages -->
 			<div th:if="${smsg}" class="alert alert-success text-center mt-3"
 				th:text="${smsg}"></div>
@@ -55,20 +66,23 @@
 						<th>expenseDate</th>
 						<th>Operations</th>
 					</tr>
-
-					<tr th:each="expense:${list}">
+		
+					<tr th:if="${#lists.size(list) > 0}" th:each="expense:${list}">
 						<td th:text="${expense.id}"></td>
 						<td th:text="${expense.expenseName}"></td>
 						<td th:text="${expense.amount}"></td>
 						<td th:text="${expense.location}"></td>
 						<td th:text="${expense.expenseDate}"></td>
-						<td><a th:href="@{/expense/delete(id=${user.id})}">
-								<button class="btn btn-danger ms-2">Delete</button>
-						</a> <a th:href="@{/expense/edit(id=${user.id})}">
+						
+						<td>
+						<a th:href="@{/expense/edit(id=${expense.id})}">
 								<button class="btn btn-warning ms-2">Edit</button>
 						</a></td>
 					</tr>
 				</table>
+				<div th:if="${#lists.size(list) == 0}">
+						<h1 class="text-center mt-3">No Expenses are added!!!</h1>
+				</div>
 			</div>
 		</div>
 
@@ -76,7 +90,7 @@
 	</div>
 	
 	<div>
-    		<ul class="pagination justify-content-center mt-4">
+    		<ul th:if="${#lists.size(list) > 0}" class="pagination justify-content-center mt-4">
             <li class="page-item">
                 <a class="page-link navbar-dark bg-dark text-white m-2"
                    th:if="${page.hasPrevious()}"
@@ -107,7 +121,7 @@
             <li class="page-item">
                 <a class="page-link navbar-dark bg-dark text-white m-2"
                    th:if="${page.hasNext()}"
-                   th:href="@{/list(page=${page.getNumber()+1}, expenseName=${param.expenseName})}">
+                   th:href="@{/all/expense(page=${page.getNumber()+1}, expenseName=${param.expenseName})}">
                     Next
                 </a>
             </li>
@@ -115,6 +129,30 @@
     	</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+function handleInput(event) {
+    const typedCharacters = event.target.value; // Gets the last typed character
+    console.log("Typed character:", typedCharacters);
+    console.log("Type of ",typeof typedCharacters);
+    fetchData(typedCharacters);
+}
+
+function fetchData(data) {
+	 fetch('http://localhost:8080/search/expense?name='+data) // Consider passing `data` here if needed
+     .then(response => {
+         if (!response.ok) throw new Error('Network response was not ok');
+         return response.json(); // Return the response as JSON
+     })
+     .then(receivedData => { // Renamed to avoid conflict with parameter name
+         console.log("Data received from backend:", receivedData);
+         // Do something with the received data
+     })
+     .catch(error => console.error('Fetch error:', error));
+}
+
+</script>
 
 </body>
 </html>

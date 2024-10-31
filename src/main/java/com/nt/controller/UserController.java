@@ -55,8 +55,7 @@ public class UserController {
 	@GetMapping("/allUsers")
 	public String showAllUsers(Model model,
             @PageableDefault(page = 0, size = 5) Pageable pageable,
-            @RequestParam(value = "message", required = false) String message,
-            @RequestParam(value = "username", required = false) String username
+            @RequestParam(value = "message", required = false) String message
     ){
 		Page<User> page = userService.getAllUsers(pageable);
 		

@@ -38,6 +38,8 @@ public class AuthenticationController {
 	public String showRegisterForm(Model model) 
 	{
         model.addAttribute("userObj", new User());
+        
+        model.addAttribute("isRegister", true);
         //returning the register page
         return "Register";
     }

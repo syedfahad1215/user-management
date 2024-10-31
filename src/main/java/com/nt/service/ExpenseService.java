@@ -11,7 +11,9 @@ import com.nt.entity.Expenses;
 import com.nt.entity.User;
 import com.nt.exception.UserNotFoundException;
 import com.nt.repo.ExpensesRepository;
+import com.nt.repo.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -54,12 +56,6 @@ public class ExpenseService implements IExpenseService {
 		
 		return expenseRepository.findAll(pageable);
 	}
-
-	@Override
-	public void dropExpense(Integer id) {
-		
-		expenseRepository.deleteById(id);
-	}
 	
 	
 	@Override
@@ -68,9 +64,9 @@ public class ExpenseService implements IExpenseService {
 	}
 
 	@Override
-	public User getUserById(Integer id) {
+	public Expenses getExpenseById(Integer id) {
 		
-		return userService.getUserById(id)
+		return expenseRepository.findById(id)
 				.orElseThrow(() -> new UserNotFoundException());
 	}
 
@@ -78,5 +74,33 @@ public class ExpenseService implements IExpenseService {
 	public int getCurrentUserId() {
 		return userService.getUserId();
 	}
+	
+/*
+	@Override
+	@Transactional
+	public void dropExpense(Integer id) {
+		logger.info("The expense who's id= "+id+" Is going to be deleted");
+		
+		
+		User user = userService.getCurrentUserDetails();
+		
+//		boolean removeIf = user.getExpenses().removeIf( exp -> exp.equals(id));
+		
+		user.getExpenses().remove(expenseRepository.findById(id));
+		
+		userService.saveUser(user);
+		
+		boolean contains = user.getExpenses().contains(expenseRepository.findById(id));
+		
+		
+		
+		
+		logger.info("User contains expense "+ contains);
+		
+	}
+
+*/
+	
+	
 	
 }

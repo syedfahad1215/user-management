@@ -36,9 +36,19 @@
         <div class="form-container mt-2">
         
         <!-- Register Form  -->
-            <form th:if="${userObj == null}" th:object="${userObj}" th:action="@{/register}" method="post">
+            <form  th:object="${userObj}" th:action="@{/register}" method="post">
                 <h2 class="text-center" >Sign Up</h2>
-                <div class="mb-3">
+                <div th:if="${isRegister == false}" class="mb-3">
+                    <label for="id" class="form-label">Id :</label>
+                    <input type="text"  th:field="*{id}" class="form-control"
+                        readonly>
+                </div>
+                <div th:if="${isRegister == false}" class="mb-3">
+                    <label for="username" class="form-label">User Name:</label>
+                    <input type="text"  th:field="*{username}" class="form-control"
+                        placeholder="Enter your username" readonly>
+                </div>
+                <div th:if="${isRegister == true}" class="mb-3">
                     <label for="username" class="form-label">User Name:</label>
                     <input type="text"  th:field="*{username}" class="form-control"
                         placeholder="Enter your username" >
@@ -65,11 +75,11 @@
             </form>
             
             
-            <!-- Edit/ Update Form -->
+            <!-- Edit/ Update Form 
             
-            <form th:if="${userObj != null}" th:object="${userObj}" th:action="@{/user/update}" method="post">
+            <form  th:object="${userObj}" th:action="@{/user/update}" method="post">
                 <h2 class="text-center">Edit User</h2>
-                 <div class="mb-3">
+                 <div th:if="${userObj != null}" class="mb-3">
                     <label for="id" class="form-label">Id :</label>
                     <input type="text"  th:field="*{id}" class="form-control"
                         readonly>
@@ -99,7 +109,7 @@
                 </div>
 
             </form>
-            
+            -->
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
